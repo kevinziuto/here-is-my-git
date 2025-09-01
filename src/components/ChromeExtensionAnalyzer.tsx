@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Upload, File, FolderOpen, Download, Info } from 'lucide-react';
+import { Upload, File, FolderOpen, Download, Info, Play } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -34,6 +35,7 @@ const ChromeExtensionAnalyzer = () => {
   const [selectedFile, setSelectedFile] = useState<ExtensionFile | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -141,6 +143,19 @@ const ChromeExtensionAnalyzer = () => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
+  const runExtension = () => {
+    if (!manifest || files.length === 0) return;
+    
+    navigate('/run', {
+      state: {
+        extensionData: {
+          manifest,
+          files
+        }
+      }
+    });
+  };
+
   return (
     <div className="min-h-screen bg-background p-6">
       <div className="max-w-7xl mx-auto space-y-6">
@@ -208,6 +223,17 @@ const ChromeExtensionAnalyzer = () => {
                     </div>
                   </div>
                 )}
+                
+                <div className="pt-4">
+                  <Button 
+                    onClick={runExtension}
+                    className="w-full flex items-center justify-center gap-2"
+                    size="lg"
+                  >
+                    <Play className="h-5 w-5" />
+                    Ejecutar Extensión
+                  </Button>
+                </div>
               </CardContent>
             </Card>
 
